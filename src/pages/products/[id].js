@@ -7,7 +7,7 @@ import Header from "../../components/Header";
 import Footer from "../../components/Footer";
 import { useCartStore } from "@/useCartStore";
 
-const CartSidebar = dynamic(() => import("../../components/CartSidebar"), {
+const CartSidebar = dynamic(() => import("../../components/"), {
   ssr: false,
 });
 
@@ -119,6 +119,11 @@ export default function ProductPage({ product }) {
       <Footer />
     </div>
   );
+}
+
+// ... getStaticPaths y getStaticProps igual que antes
+export async function getStaticPaths() {
+  return { paths: [], fallback: "blocking" };
 }
 
 export async function getStaticProps(context) {
