@@ -145,7 +145,6 @@ export async function getStaticProps() {
   } catch (error) {
     console.error("Error obteniendo productos en build time:", error);
 
-    // RETORNO SEGURO: Si falla, devolvemos un array vacío para que el build NO se rompa
     return {
       props: { products: fallbackProducts },
       revalidate: 60,

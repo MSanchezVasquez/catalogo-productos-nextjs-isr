@@ -131,25 +131,25 @@ export async function getStaticProps(context) {
   const { id } = context.params;
 
   try {
+    // Intentamos API primero
     const res = await fetch(`https://fakestoreapi.com/products/${id}`);
 
-    if (!res.ok) {
-      // Si no existe, devolvemos notFound
-      return { notFound: true };
+    if (res.ok) {
+      const product = await res.json();
+      if (product) {
+        return { props: { product }, revalidate: 300 };
+      }
     }
 
-    const product = await res.json();
-
-    return {
-      props: { product },
-      revalidate: 300,
-    };
+    // Si la API falla (404, bloqueo, etc), forzamos un error para ir al catch
+    throw new Error("API falló o producto no encontrado en API");
   } catch (error) {
-    console.log(`Buscando ID ${id} en datos locales...`);
+    console.log(`Usando fallback para producto ID: ${id}`);
 
-    // Buscar en el array local
-    // Nota: context.params.id es string, por eso usamos == o convertimos a Number
-    const localProduct = fallbackProducts.find((p) => p.id == id);
+    // BUSQUEDA ROBUSTA: Convertimos ambos a String para asegurar que "2" sea igual a 2
+    const localProduct = fallbackProducts.find(
+      (p) => String(p.id) === String(id)
+    );
 
     if (localProduct) {
       return {
@@ -158,6 +158,7 @@ export async function getStaticProps(context) {
       };
     }
 
+    // Si no está ni en API ni en local, entonces sí es un 404 real
     return { notFound: true };
   }
 }
