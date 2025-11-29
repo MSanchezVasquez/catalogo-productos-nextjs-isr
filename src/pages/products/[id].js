@@ -7,7 +7,7 @@ import Header from "../../components/Header";
 import Footer from "../../components/Footer";
 import { useCartStore } from "@/useCartStore";
 
-const CartSidebar = dynamic(() => import("../../components/"), {
+const CartSidebar = dynamic(() => import("../../components/CartSidebar"), {
   ssr: false,
 });
 
