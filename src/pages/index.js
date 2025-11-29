@@ -6,6 +6,7 @@ import { Star, Plus } from "lucide-react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import { useCartStore } from "@/useCartStore";
+import { fallbackProducts } from "../data/products";
 
 const CartSidebar = dynamic(() => import("../components/CartSidebar"), {
   ssr: false,
@@ -146,7 +147,7 @@ export async function getStaticProps() {
 
     // RETORNO SEGURO: Si falla, devolvemos un array vacío para que el build NO se rompa
     return {
-      props: { products: [] },
+      props: { products: fallbackProducts },
       revalidate: 60,
     };
   }

@@ -6,6 +6,7 @@ import { ChevronRight, ShoppingBag, Heart, Share2, Star } from "lucide-react";
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
 import { useCartStore } from "@/useCartStore";
+import { fallbackProducts } from "../../data/products";
 
 const CartSidebar = dynamic(() => import("../../components/CartSidebar"), {
   ssr: false,
@@ -144,7 +145,19 @@ export async function getStaticProps(context) {
       revalidate: 300,
     };
   } catch (error) {
-    console.error(`Error en producto ${id}:`, error);
+    console.log(`Buscando ID ${id} en datos locales...`);
+
+    // Buscar en el array local
+    // Nota: context.params.id es string, por eso usamos == o convertimos a Number
+    const localProduct = fallbackProducts.find((p) => p.id == id);
+
+    if (localProduct) {
+      return {
+        props: { product: localProduct },
+        revalidate: 300,
+      };
+    }
+
     return { notFound: true };
   }
 }
