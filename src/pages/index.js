@@ -127,10 +127,27 @@ export default function HomePage({ products }) {
 }
 
 export async function getStaticProps() {
-  const res = await fetch("https://fakestoreapi.com/products");
-  const products = await res.json();
-  return {
-    props: { products },
-    revalidate: 60,
-  };
+  try {
+    const res = await fetch("https://fakestoreapi.com/products");
+
+    // Si la API responde con error (ej. 404 o 500), lanzamos error para caer en el catch
+    if (!res.ok) {
+      throw new Error(`API error: ${res.status}`);
+    }
+
+    const products = await res.json();
+
+    return {
+      props: { products },
+      revalidate: 60,
+    };
+  } catch (error) {
+    console.error("Error obteniendo productos en build time:", error);
+
+    // RETORNO SEGURO: Si falla, devolvemos un array vacío para que el build NO se rompa
+    return {
+      props: { products: [] },
+      revalidate: 60,
+    };
+  }
 }

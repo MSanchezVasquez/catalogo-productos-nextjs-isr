@@ -121,15 +121,25 @@ export default function ProductPage({ product }) {
   );
 }
 
-// ... getStaticPaths y getStaticProps igual que antes
-export async function getStaticPaths() {
-  return { paths: [], fallback: "blocking" };
-}
-
 export async function getStaticProps(context) {
   const { id } = context.params;
-  const res = await fetch(`https://fakestoreapi.com/products/${id}`);
-  const product = await res.json();
-  if (!product) return { notFound: true };
-  return { props: { product }, revalidate: 300 };
+
+  try {
+    const res = await fetch(`https://fakestoreapi.com/products/${id}`);
+
+    if (!res.ok) {
+      // Si no existe, devolvemos notFound
+      return { notFound: true };
+    }
+
+    const product = await res.json();
+
+    return {
+      props: { product },
+      revalidate: 300,
+    };
+  } catch (error) {
+    console.error(`Error en producto ${id}:`, error);
+    return { notFound: true };
+  }
 }
